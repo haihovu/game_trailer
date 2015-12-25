@@ -9,8 +9,11 @@ import com.mitel.miutil.MiExceptionUtil;
 import com.mitel.miutil.MiLogMsg;
 import com.mitel.miutil.MiSystem;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import org.dejavu.game.DvCharacter;
 import org.dejavu.game.DvTarget;
 
 /**
@@ -25,6 +28,10 @@ public class Villain extends DvTarget {
 	private int flashIdx;
 	private long damaged;
 	boolean junk;
+	private float xMult = 1.0F;
+	private float yMult = 1.0F;
+	private float xOffset = 0.0F;
+	private float yOffset = 0.0F;
 	/**
 	 * Creates a new villain.
 	 * @param name The name of the villain.
@@ -54,6 +61,43 @@ public class Villain extends DvTarget {
 				destroyed();
 			}
 		}
+	}
+
+	@Override
+	public DvCharacter setPoint(Point pnt) {
+		xOffset = pnt.x;
+		yOffset = pnt.y;
+		return super.setPoint(pnt);
+	}
+
+	/**
+	 * Moves the villain by the prescribed increments. May be invoked from any thread.
+	 * @param bounds The bounds within which the villain must move.
+	 */
+	void moveVillain(Rectangle bounds) {
+		Image curImg = getNextImage();
+
+		float xInc = (float)(Math.random() * 3.0 + 1.0);
+		float yInc = (float)(Math.random() * 2.0 + 0.5);
+		xOffset += (xMult * xInc);
+		yOffset += (yMult * yInc);
+		double scale = getScale();
+		if((xOffset + (curImg.getWidth(null) * scale / 2.0)) > bounds.width) {
+			xMult = -1.0F;
+		} else if(xOffset < 0.0) {
+			xMult = 1.0F;
+		} else if(Math.random() > 0.99) {
+			xMult = -xMult;
+		}
+		if((yOffset + (curImg.getHeight(null) * scale / 2.0)) > bounds.height) {
+			yMult = -1.0F;
+		} else if(yOffset < 0.0) {
+			yMult = 1.0F;
+		} else if(Math.random() > 0.99) {
+			yMult = -yMult;
+		}
+
+		super.setPoint(new Point((int)xOffset, (int)yOffset));
 	}
 
 	@Override

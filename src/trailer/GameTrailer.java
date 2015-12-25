@@ -5,9 +5,6 @@
  */
 package trailer;
 
-import trailer.VinItem;
-import trailer.Villain;
-import trailer.VinInventory;
 import com.mitel.miutil.MiBackgroundTask;
 import com.mitel.miutil.MiExceptionUtil;
 import com.mitel.miutil.MiLogMsg;
@@ -23,6 +20,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
@@ -203,78 +202,49 @@ public class GameTrailer extends javax.swing.JFrame {
 	 */
 	private class VillainRunner extends MiBackgroundTask {
 		private final long period;
-		private final String name;
-		private final Villain villain;
-		private float xInc = 1.5F;
-		private float xMult = 1.0F;
-		private float yMult = 1.0F;
-		private float yInc = 1.F;
-		private float xOffset = 0.0F;
-		private float yOffset = 0.0F;
+		private final Map<String, Villain> villains = new HashMap<>(1024);
 		/**
 		 * Creates a new villain runner task
-		 * @param villain The villain
 		 * @param period The task period in number of milliseconds.
 		 */
-		public VillainRunner(Villain villain, long period) {
-			super(villain.name);
-			this.name = villain.name;
+		public VillainRunner(long period) {
+			super("Villains");
 			this.period = period;
-			this.villain = villain;
-			Point pt = villain.getPoint();
-			xOffset = pt.x;
-			yOffset = pt.y;
 		}
 		
-		/**
-		 * Moves the man by the prescribed increments. May be invoked from any thread.
-		 * @param bounds The bounds within which the man must move.
-		 */
-		private void moveMan(Rectangle bounds) {
-			Image curImg = villain.getNextImage();
-			
-			xInc = (float)(Math.random() * 3.0 + 1.0);
-			yInc = (float)(Math.random() * 2.0 + 0.5);
-			xOffset += (xMult * xInc);
-			yOffset += (yMult * yInc);
-			double scale = villain.getScale();
-			if((xOffset + (curImg.getWidth(null) * scale / 2.0)) > bounds.width) {
-				xMult = -1.0F;
-			} else if(xOffset < 0.0) {
-				xMult = 1.0F;
-			} else if(Math.random() > 0.99) {
-				xMult = -xMult;
+		public void addVillain(Villain villain) {
+			synchronized(villains) {
+				villains.put(villain.name, villain);
 			}
-			if((yOffset + (curImg.getHeight(null) * scale / 2.0)) > bounds.height) {
-				yMult = -1.0F;
-			} else if(yOffset < 0.0) {
-				yMult = 1.0F;
-			} else if(Math.random() > 0.99) {
-				yMult = -yMult;
-			}
-			
-			villain.setPoint(new Point((int)xOffset, (int)yOffset));
 		}
 		
+		public void removeVillain(String name) {
+			synchronized(villains) {
+				villains.remove(name);
+			}
+		}
+		
+		private Collection<Villain> getVillains() {
+			synchronized(villains) {
+				return new ArrayList<>(villains.values());
+			}
+		}
 		@Override
 		public void run() {
 			try {
-				Runnable work = () -> {
-					Rectangle bounds = getBounds();
-					moveMan(bounds);
-				};
-				
 				while(getRunFlag()) {
-					SwingUtilities.invokeLater(work);
+					Rectangle bounds = getBounds();
+					getVillains().stream().forEach((villain) -> {
+						SwingUtilities.invokeLater(() -> {
+							villain.moveVillain(bounds);
+						});
+					});
 					synchronized(this) {
 						this.wait(period);
 					}
 				}
 			} catch (InterruptedException ex) {
 			} finally {
-				synchronized(villains) {
-					villains.remove(this.name);
-				}
 			}
 		}
 	}
@@ -284,10 +254,12 @@ public class GameTrailer extends javax.swing.JFrame {
 	 */
 	public GameTrailer() throws IOException {
 		ImageIcon exitImg = new ImageIcon(GameTrailer.class.getClassLoader().getResource("icons/door_in.png"));
+		ImageIcon villainLaunchImg = new ImageIcon(GameTrailer.class.getClassLoader().getResource("icons/tux.png"));
 		
 		initComponents(); 
 		
 		fileExitMenu.setIcon(exitImg);
+		optionLaunchVillain.setIcon(villainLaunchImg);
 		
 		status = new VinInventory(animation);
 		status.setScale(scalingFactor);
@@ -331,14 +303,21 @@ public class GameTrailer extends javax.swing.JFrame {
 				MiSystem.logWarning(MiLogMsg.Category.DESIGN, MiExceptionUtil.simpleTrace(ex));
 			}
 		});
+		villainRunner = new VillainRunner(33);
+		villainRunner.start();
 	}
 	/**
 	 * Animates the inventory belt for testing purposes.
 	 */
-	private class ItemPlayer extends MiBackgroundTask {
+	private class ItemDemoTask extends MiBackgroundTask {
 		private final VinItem [] items;
 		private final long period;
-		public ItemPlayer(long period) throws IOException {
+		/**
+		 * Creates a new item player instance.
+		 * @param period
+		 * @throws IOException 
+		 */
+		public ItemDemoTask(long period) throws IOException {
 			super("ItemPlayer");
 			ClassLoader cl = GameTrailer.class.getClassLoader();
 			items = new VinItem[] {
@@ -392,10 +371,10 @@ public class GameTrailer extends javax.swing.JFrame {
 	private final DvAnimatedPanel animation = new DvAnimatedPanel();
 	private final File stateFile = new File(new File(System.getProperty("user.home")), "gametrailer.xml");
 	private DvActor actor;
-	private final Map<String, MiBackgroundTask> villains = new HashMap<>(64);
 	private MiBackgroundTask itemPlayer;
+	private final VillainRunner villainRunner;
 	private final VinInventory status;
-	private static final double scalingFactor = 2.0;
+	private static final double scalingFactor = 1.0;
 	private static int villainIdx;
 	
 	/**
@@ -407,7 +386,7 @@ public class GameTrailer extends javax.swing.JFrame {
 			Image cabinImg = ImageIO.read(getClass().getClassLoader().getResource("cabin.png"));
 			animation.addCharacter(new DvCharacter("Cabin", cabinImg, new Image[]{cabinImg}).setPoint(center).setScale(scalingFactor));
 			animation.addComponent(status);
-			itemPlayer = new ItemPlayer(1000).start();
+			itemPlayer = new ItemDemoTask(1000).start();
 		} catch (IOException ex) {
 			MiSystem.logWarning(MiLogMsg.Category.DESIGN, MiExceptionUtil.simpleTrace(ex));
 		}
@@ -427,42 +406,27 @@ public class GameTrailer extends javax.swing.JFrame {
 	 */
 	private void launchVillains() {
 		int numVillains = (int)(Math.random() * 10) + 3;
-		synchronized(villains) {
-			for(int i = 0; i < numVillains; ++i) {
-				Point center = new Point(state.getWidth() / 2, state.getHeigth() / 2);
-				Villain villain = new Villain("Man" + villainIdx++, new DvTarget.TargetListener() {
-					@Override
-					public void hit(String name) {
-						MiBackgroundTask task = null;
-						synchronized(villains) {
-							task = villains.remove(name);
-						}
-						if(task != null) {
-							task.stop();
-						}
-					}
+		for(int i = 0; i < numVillains; ++i) {
+			Point center = new Point(state.getWidth() / 2, state.getHeigth() / 2);
+			Villain villain = new Villain("Man" + villainIdx++, new DvTarget.TargetListener() {
+				@Override
+				public void hit(String name) {
+					villainRunner.removeVillain(name);
+				}
 
-					@Override
-					public void destroyed(String name) {
-						MiBackgroundTask task = null;
-						synchronized(villains) {
-							task = villains.remove(name);
-						}
-						if(task != null) {
-							task.stop();
-						}
-						Bullet.removeTarget(name);
-						SwingUtilities.invokeLater(() -> {
-							animation.removeCharacter(name);
-						});
-					}
-				});
-				villain.setScale(scalingFactor);
-				animation.addCharacter(villain.setPoint(center));
-				MiBackgroundTask villainTask = new VillainRunner(villain, 10).start();
-				villains.put(villain.name, villainTask);
-				Bullet.addTarget(villain);
-			}
+				@Override
+				public void destroyed(String name) {
+					villainRunner.removeVillain(name);
+					Bullet.removeTarget(name);
+					SwingUtilities.invokeLater(() -> {
+						animation.removeCharacter(name);
+					});
+				}
+			});
+			villain.setScale(scalingFactor);
+			animation.addCharacter(villain.setPoint(center));
+			Bullet.addTarget(villain);
+			villainRunner.addVillain(villain);
 		}
 	}
 	
@@ -528,11 +492,7 @@ public class GameTrailer extends javax.swing.JFrame {
 			actor.disconnect();
 		}
 		state.importBounds(this).saveState(stateFile);
-		synchronized(villains) {
-			villains.values().stream().forEach((villain) -> {
-				villain.stop();
-			});
-		}
+		villainRunner.stop();
     }//GEN-LAST:event_formWindowClosing
 
     private void fileExitMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileExitMenuActionPerformed

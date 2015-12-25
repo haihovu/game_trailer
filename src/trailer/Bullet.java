@@ -47,23 +47,22 @@ public class Bullet {
 		}
 
 		/**
-		 * Adds a new bullet to the animation panel.
+		 * Adds a new bullet to the animation panel. Must be called from EDT.
 		 * @param src The source location of the new bullet.
 		 * @param dst A point in the trajectory of the new bullet.
-		 * @return The new bullet.
 		 */
-		private Bullet addBullet(Point src, Point dst) {
-			synchronized(bullets) {
-				Bullet bullet = new Bullet(animation, src, dst, this);
-				bullets.put(bullet.name, bullet);
-				SwingUtilities.invokeLater(() -> {
+		private void addBullet(Point src, Point dst) {
+			SwingUtilities.invokeLater(()->{
+				synchronized(bullets) {
+					Bullet bullet = new Bullet(animation, src, dst, this);
+					bullets.put(bullet.name, bullet);
 					animation.addCharacter(bullet.bullet);
-				});
-				return bullet;
-			}
+				}
+			});
 		}
+		
 		/**
-		 * Removes a bullet from the animation panel.
+		 * Removes a bullet from the animation panel. May be called from any thread.
 		 * @param name The name of the target bullet.
 		 */
 		private void removeBullet(String name) {
@@ -147,36 +146,44 @@ public class Bullet {
 	 * Stops the bullet animation manager.
 	 */
 	public static void stop() {
+		Manager m;
 		synchronized(Bullet.class) {
-			if(mgr != null) {
-				mgr.stop();
-				mgr = null;
-			}
+			m = getManager();
+			mgr = null;
+		}
+		if(m != null) {
+			m.stop();
 		}
 	}
 	/**
-	 * Adds a new bullet to the animation.
+	 * Adds a new bullet to the animation. May be called from any thread.
 	 * @param src The source location of the new bullet.
 	 * @param dst A point in the trajectory of the bullet.
-	 * @return The new bullet, or null if animation is not started.
 	 */
-	public static Bullet addBullet(Point src, Point dst) {
-		synchronized(Bullet.class) {
-			if(mgr != null) {
-				return mgr.addBullet(src, dst);
-			}
+	public static void addBullet(Point src, Point dst) {
+		Manager m = getManager();
+		if(m != null) {
+			m.addBullet(src, dst);
 		}
-		return null;
+	}
+	
+	/**
+	 * Retrieves the current bullet manager. May be called from any thread.
+	 * @return The manager, or null if none was started.
+	 */
+	private static Manager getManager() {
+		synchronized(Bullet.class) {
+			return mgr;
+		}
 	}
 	/**
 	 * Removes a bullet from the animation.
 	 * @param bullet The bullet to be removed.
 	 */
 	public static void removeBullet(Bullet bullet) {
-		synchronized(Bullet.class) {
-			if(mgr != null) {
-				mgr.removeBullet(bullet.name);
-			}
+		Manager m = getManager();
+		if(m != null) {
+			m.removeBullet(bullet.name);
 		}
 	}
 	/**
