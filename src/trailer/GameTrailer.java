@@ -314,18 +314,18 @@ public class GameTrailer extends javax.swing.JFrame {
 		private final long period;
 		/**
 		 * Creates a new item player instance.
-		 * @param period
+		 * @param period Period of the task, in number of milliseconds.
 		 * @throws IOException 
 		 */
 		public ItemDemoTask(long period) throws IOException {
 			super("ItemPlayer");
-			ClassLoader cl = GameTrailer.class.getClassLoader();
+			ClassLoader cloader = GameTrailer.class.getClassLoader();
 			items = new VinItem[] {
-				new VinItem("Ancient Shield", ImageIO.read(cl.getResource("shield-ancient.png"))),
-				new VinItem("Wooden Shield", ImageIO.read(cl.getResource("shield-wooden.png"))),
-				new VinItem("Bomb", ImageIO.read(cl.getResource("bomb.png"))),
-				new VinItem("Sword", ImageIO.read(cl.getResource("sword.png"))),
-				new VinItem("Bow", ImageIO.read(cl.getResource("bow.png")))
+				new VinItem("Ancient Shield", ImageIO.read(cloader.getResource("shield-ancient.png"))),
+				new VinItem("Wooden Shield", ImageIO.read(cloader.getResource("shield-wooden.png"))),
+				new VinItem("Bomb", ImageIO.read(cloader.getResource("bomb.png"))),
+				new VinItem("Sword", ImageIO.read(cloader.getResource("sword.png"))),
+				new VinItem("Bow", ImageIO.read(cloader.getResource("bow.png")))
 			};
 			this.period = period;
 		}
@@ -362,8 +362,6 @@ public class GameTrailer extends javax.swing.JFrame {
 					}
 				}
 			} catch (InterruptedException ex) {
-			} finally {
-				
 			}
 		}
 	}
