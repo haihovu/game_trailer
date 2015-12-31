@@ -26,6 +26,7 @@ public class Villain extends DvTarget {
 	private static final Image DAMAGED_MAN_IMAGE;
 	private static final Image MAN_IMAGE;
 	private int flashIdx;
+	private int flashTimer;
 	private long damaged;
 	boolean junk;
 	private float xMult = 1.0F;
@@ -34,7 +35,7 @@ public class Villain extends DvTarget {
 	private float yOffset = 0.0F;
 	/**
 	 * Creates a new villain.
-	 * @param name The name of the villain.
+	 * @param name The name of the villain. Should be unique.
 	 * @param listener Target listener for hit/destroy events.
 	 */
 	public Villain(String name, TargetListener listener) {
@@ -106,10 +107,16 @@ public class Villain extends DvTarget {
 			if(damaged > 0) {
 				long delta = System.currentTimeMillis() - damaged;
 				if(delta < 1500) {
-					if(flashIdx >= FLASH_IMAGES.length) {
-						flashIdx = 0;
+					if(flashTimer > 0) {
+						--flashTimer;
+					} else {
+						flashTimer = 3;
+						flashIdx++;
+						if(flashIdx >= FLASH_IMAGES.length) {
+							flashIdx = 0;
+						}
 					}
-					return FLASH_IMAGES[flashIdx++];
+					return FLASH_IMAGES[flashIdx];
 				}
 				junk = true;
 				return DAMAGED_MAN_IMAGE;

@@ -269,10 +269,12 @@ public class GameTrailer extends javax.swing.JFrame {
 		Bullet.start(animation);
 		animation.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent evt) {
-				Point pt = evt.getPoint();
-				if(actor != null) {
-					Bullet.addBullet(actor.character.getPoint(), pt);
+			public void mousePressed(MouseEvent e) {
+				if(!e.isPopupTrigger()) {
+					Point pt = e.getPoint();
+					if(actor != null) {
+						Bullet.addBullet(actor.character.getPoint(), pt);
+					}
 				}
 			}
 		});

@@ -127,7 +127,7 @@ public class Bullet {
 		}
 	}
 	
-	private static Manager mgr;
+	private static Manager manager;
 	private static final Map<String, DvTarget> targets = new HashMap<>(32);
 	
 	/**
@@ -136,8 +136,8 @@ public class Bullet {
 	 */
 	public static void start(DvAnimatedPanel animation) {
 		synchronized(Bullet.class) {
-			if(mgr == null) {
-				mgr = new Manager(animation).start();
+			if(manager == null) {
+				manager = new Manager(animation).start();
 			}
 		}
 	}
@@ -146,13 +146,13 @@ public class Bullet {
 	 * Stops the bullet animation manager.
 	 */
 	public static void stop() {
-		Manager m;
+		Manager mgr;
 		synchronized(Bullet.class) {
-			m = getManager();
-			mgr = null;
+			mgr = manager;
+			manager = null;
 		}
-		if(m != null) {
-			m.stop();
+		if(mgr != null) {
+			mgr.stop();
 		}
 	}
 	/**
@@ -161,9 +161,9 @@ public class Bullet {
 	 * @param dst A point in the trajectory of the bullet.
 	 */
 	public static void addBullet(Point src, Point dst) {
-		Manager m = getManager();
-		if(m != null) {
-			m.addBullet(src, dst);
+		Manager mgr = getManager();
+		if(mgr != null) {
+			mgr.addBullet(src, dst);
 		}
 	}
 	
@@ -173,7 +173,7 @@ public class Bullet {
 	 */
 	private static Manager getManager() {
 		synchronized(Bullet.class) {
-			return mgr;
+			return manager;
 		}
 	}
 	/**
@@ -181,9 +181,9 @@ public class Bullet {
 	 * @param bullet The bullet to be removed.
 	 */
 	public static void removeBullet(Bullet bullet) {
-		Manager m = getManager();
-		if(m != null) {
-			m.removeBullet(bullet.name);
+		Manager mgr = getManager();
+		if(mgr != null) {
+			mgr.removeBullet(bullet.name);
 		}
 	}
 	/**
