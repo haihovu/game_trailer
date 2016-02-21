@@ -5,10 +5,6 @@
  */
 package trailer;
 
-import com.mitel.miutil.MiBackgroundTask;
-import com.mitel.miutil.MiExceptionUtil;
-import com.mitel.miutil.MiLogMsg;
-import com.mitel.miutil.MiSystem;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
@@ -39,6 +35,10 @@ import org.dejavu.game.DvAnimatedPanel;
 import org.dejavu.game.DvCharacter;
 import org.dejavu.game.DvControlKey;
 import org.dejavu.game.DvTarget;
+import org.dejavu.util.DjvBackgroundTask;
+import org.dejavu.util.DjvExceptionUtil;
+import org.dejavu.util.DjvLogMsg;
+import org.dejavu.util.DjvSystem;
 
 /**
  * This is the game trailer frame.
@@ -101,7 +101,7 @@ public class GameTrailer extends javax.swing.JFrame {
 						copy((State)pojo);
 					}
 				} catch (JAXBException ex) {
-					MiSystem.logWarning(MiLogMsg.Category.DESIGN, MiExceptionUtil.simpleTrace(ex));
+					DjvSystem.logWarning(DjvLogMsg.Category.DESIGN, DjvExceptionUtil.simpleTrace(ex));
 				}
 			}
 			return this;
@@ -117,7 +117,7 @@ public class GameTrailer extends javax.swing.JFrame {
 				marshal.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 				marshal.marshal(this, toFile);
 			} catch (JAXBException ex) {
-				MiSystem.logWarning(MiLogMsg.Category.DESIGN, MiExceptionUtil.simpleTrace(ex));
+				DjvSystem.logWarning(DjvLogMsg.Category.DESIGN, DjvExceptionUtil.simpleTrace(ex));
 			}
 		}
 		/**
@@ -200,7 +200,7 @@ public class GameTrailer extends javax.swing.JFrame {
 	/**
 	 * The task for moving the villain about inside the frame.
 	 */
-	private class VillainRunner extends MiBackgroundTask {
+	private class VillainRunner extends DjvBackgroundTask {
 		private final long period;
 		private final Map<String, Villain> villains = new HashMap<>(1024);
 		/**
@@ -302,7 +302,7 @@ public class GameTrailer extends javax.swing.JFrame {
 					new DvControlKey(DvControlKey.Direction.RIGHT, KeyEvent.VK_RIGHT)
 				});
 			} catch (IOException ex) {
-				MiSystem.logWarning(MiLogMsg.Category.DESIGN, MiExceptionUtil.simpleTrace(ex));
+				DjvSystem.logWarning(DjvLogMsg.Category.DESIGN, DjvExceptionUtil.simpleTrace(ex));
 			}
 		});
 		villainRunner = new VillainRunner(33);
@@ -311,7 +311,7 @@ public class GameTrailer extends javax.swing.JFrame {
 	/**
 	 * Animates the inventory belt for testing purposes.
 	 */
-	private class ItemDemoTask extends MiBackgroundTask {
+	private class ItemDemoTask extends DjvBackgroundTask {
 		private final VinItem [] items;
 		private final long period;
 		/**
@@ -371,7 +371,7 @@ public class GameTrailer extends javax.swing.JFrame {
 	private final DvAnimatedPanel animation = new DvAnimatedPanel();
 	private final File stateFile = new File(new File(System.getProperty("user.home")), "gametrailer.xml");
 	private DvActor actor;
-	private MiBackgroundTask itemPlayer;
+	private DjvBackgroundTask itemPlayer;
 	private final VillainRunner villainRunner;
 	private final VinInventory status;
 	private static final double scalingFactor = 1.0;
@@ -388,7 +388,7 @@ public class GameTrailer extends javax.swing.JFrame {
 			animation.addComponent(status);
 			itemPlayer = new ItemDemoTask(1000).start();
 		} catch (IOException ex) {
-			MiSystem.logWarning(MiLogMsg.Category.DESIGN, MiExceptionUtil.simpleTrace(ex));
+			DjvSystem.logWarning(DjvLogMsg.Category.DESIGN, DjvExceptionUtil.simpleTrace(ex));
 		}
 	}
 	/**
@@ -510,14 +510,14 @@ public class GameTrailer extends javax.swing.JFrame {
 	 * @param args the command line arguments
 	 */
 	public static void main(String args[]) {
-		MiSystem.setLogLevel(2);
+		DjvSystem.setLogLevel(2);
 		
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(() -> {
 			try {
 				new GameTrailer().setVisible(true);
 			} catch (IOException ex) {
-				MiSystem.logError(MiLogMsg.Category.DESIGN, MiExceptionUtil.simpleTrace(ex));
+				DjvSystem.logError(DjvLogMsg.Category.DESIGN, DjvExceptionUtil.simpleTrace(ex));
 			}
 		});
 	}

@@ -5,9 +5,6 @@
  */
 package trailer;
 
-import com.mitel.miutil.MiExceptionUtil;
-import com.mitel.miutil.MiLogMsg;
-import com.mitel.miutil.MiSystem;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -15,6 +12,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import org.dejavu.game.DvCharacter;
 import org.dejavu.game.DvTarget;
+import org.dejavu.util.DjvExceptionUtil;
+import org.dejavu.util.DjvLogMsg;
+import org.dejavu.util.DjvSystem;
 
 /**
  * Representing a villain to be be used as targets
@@ -137,7 +137,7 @@ public class Villain extends DvTarget {
 			tmpDamagedMan = ImageIO.read(Villain.class.getClassLoader().getResource("rune.png"));
 			tmpMan = ImageIO.read(Villain.class.getClassLoader().getResource("nil.png"));
 		} catch (IOException ex) {
-			MiSystem.logError(MiLogMsg.Category.DESIGN, MiExceptionUtil.simpleTrace(ex));
+			DjvSystem.logError(DjvLogMsg.Category.DESIGN, DjvExceptionUtil.simpleTrace(ex));
 		}
 		FLASH_IMAGES = tmpFlashes != null ? tmpFlashes : new Image[0];
 		DAMAGED_MAN_IMAGE = tmpDamagedMan;
