@@ -252,6 +252,7 @@ public class GameTrailer extends javax.swing.JFrame {
 	 * Creates new game trailer.
 	 * @throws java.io.IOException
 	 */
+	@SuppressWarnings("OverridableMethodCallInConstructor")
 	public GameTrailer() throws IOException {
 		ImageIcon exitImg = new ImageIcon(GameTrailer.class.getClassLoader().getResource("icons/door_in.png"));
 		ImageIcon villainLaunchImg = new ImageIcon(GameTrailer.class.getClassLoader().getResource("icons/tux.png"));
@@ -291,10 +292,13 @@ public class GameTrailer extends javax.swing.JFrame {
 		SwingUtilities.invokeLater(() -> {
 			addStuff();
 			try {
+				// Creating the actor along with the images required for animating the movement.
 				actor = new DvActor(new DvCharacter("Nil", ImageIO.read(getClass().getClassLoader().getResource("nil-f1.png")), new Image[]{
 					ImageIO.read(getClass().getClassLoader().getResource("nil-f2.png")),
 					ImageIO.read(getClass().getClassLoader().getResource("nil-f3.png")),
 				}).setScale(scalingFactor), animation);
+				
+				// Adding the actor along with the key control for moving.
 				addActor(actor, new DvControlKey[]{
 					new DvControlKey(DvControlKey.Direction.UP, KeyEvent.VK_UP),
 					new DvControlKey(DvControlKey.Direction.DOWN, KeyEvent.VK_DOWN),
