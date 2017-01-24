@@ -5,9 +5,6 @@
  */
 package trailer;
 
-import com.mitel.miutil.MiExceptionUtil;
-import com.mitel.miutil.MiLogMsg;
-import com.mitel.miutil.MiSystem;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -24,6 +21,9 @@ import javax.swing.SwingUtilities;
 import org.dejavu.game.DvAnimatedPanel;
 import org.dejavu.game.DvCharacter;
 import org.dejavu.game.DvTarget;
+import org.dejavu.util.DjvExceptionUtil;
+import org.dejavu.util.DjvLogMsg;
+import org.dejavu.util.DjvSystem;
 
 /**
  * Represents bullets in the animation panel.
@@ -292,7 +292,7 @@ public class Bullet {
 		try {
 			BULLET_IMAGE = ImageIO.read(Bullet.class.getClassLoader().getResource("magiccnt.png"));
 		} catch (IOException ex) {
-			MiSystem.logError(MiLogMsg.Category.DESIGN, MiExceptionUtil.simpleTrace(ex));
+			DjvSystem.logError(DjvLogMsg.Category.DESIGN, DjvExceptionUtil.simpleTrace(ex));
 		}
 	}
 }

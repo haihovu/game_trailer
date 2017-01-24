@@ -5,9 +5,6 @@
  */
 package trailer;
 
-import com.mitel.miutil.MiExceptionUtil;
-import com.mitel.miutil.MiLogMsg;
-import com.mitel.miutil.MiSystem;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
@@ -23,6 +20,9 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import org.dejavu.game.DvAnimatedPanel;
 import org.dejavu.game.DvComponent;
+import org.dejavu.util.DjvExceptionUtil;
+import org.dejavu.util.DjvLogMsg;
+import org.dejavu.util.DjvSystem;
 
 /**
  * Represent the actor's inventory belt.
@@ -104,7 +104,7 @@ public class VinInventory extends DvComponent {
 				ret.addAll(items.values());
 			}
 		} catch (InterruptedException | InvocationTargetException ex) {
-			MiSystem.logInfo(MiLogMsg.Category.DESIGN, MiExceptionUtil.simpleTrace(ex));
+			DjvSystem.logInfo(DjvLogMsg.Category.DESIGN, DjvExceptionUtil.simpleTrace(ex));
 		}
 		return ret;
 	}
