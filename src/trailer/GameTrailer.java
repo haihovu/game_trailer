@@ -403,10 +403,10 @@ public class GameTrailer extends javax.swing.JFrame {
 	 */
 	private void addActor(DvActor actor, DvControlKey[] controlKeys) {
 		animation.addCharacter(actor.character);
-		actor.connectToComponent(this.getRootPane(), controlKeys);
+		actor.connectToComponent(animation, controlKeys);
 	}
 	/**
-	 * Launches a new villain.
+	 * Launches a new bunch of villains.
 	 */
 	private void launchVillains() {
 		int numVillains = (int)(Math.random() * 10) + 3;
