@@ -24,6 +24,7 @@
 			<classpath>
 				<fileset file="${midas-jar}"></fileset>
 				<fileset file="${dejavu_game-dir}/antdist/dejavu_game.jar" />
+				<fileset file="../dejavu/ant-dist/dejavu.jar" />
 			</classpath>
 		</javac>
 	</target>
@@ -34,7 +35,7 @@
 		</copy>
 		<jar basedir="${build-dir}" jarfile="${dist-dir}/gametrailer.jar" />
 		<copy todir="${dist-dir}">
-			<fileset file="${midas-jar}" />
+			<fileset file="../dejavu/ant-dist/dejavu.jar" />
 			<fileset file="${silkicons-jar}" />
 			<fileset file="${dejavu_game-dir}/antdist/dejavu_game.jar" />
 		</copy>
