@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="changeme" default="all" basedir=".">
+<project name="game_trailer" default="all" basedir=".">
 	<property name="src-dir" location="src"/>
 	<property name="build-dir" location="antbuild"/>
 	<property name="dist-dir" location="antdist"/>
-	<property name="dejavu-dir" location="../dejavu"/>
-	<property name="dejavu-jar" location="${dejavu-dir}/ant-dist/dejavu.jar"/>
+	<property name="dejavu-dist" location="../dejavu/ant-dist"/>
+	<property name="dejavu-jar" location="${dejavu-dist}/dejavu.jar"/>
 	<property name="silkicons-jar" location="${dejavu-dir}/ant-dist/silk_icons.jar"/>
-	<property name="dejavu_game-dir" location="../dejavu_game" />
+	<property name="dejavu-game-dir" location="../dejavu_game" />
+	<property name="dejavu-game-dist" location="${dejavu-game-dir}/antdist" />
 	<target name="all" depends="archive" />
 	<target name="clean" depends="clean-engine">
 		<delete quiet="true" dir="${build-dir}" />
 		<delete quiet="true" dir="${dist-dir}" />
 	</target>
 	<target name="build-engine">
-		<ant inheritall="false" dir="${dejavu_game-dir}" antfile="ant-build.xml"></ant>
+		<ant inheritall="false" dir="${dejavu-game-dir}" antfile="ant-build.xml"></ant>
 	</target>
 	<target name="clean-engine">
-		<ant inheritall="false" dir="${dejavu_game-dir}" antfile="ant-build.xml" target="clean"></ant>
+		<ant inheritall="false" dir="${dejavu-game-dir}" antfile="ant-build.xml" target="clean"></ant>
 	</target>
 	<target name="compile" depends="build-engine">
 		<mkdir dir="${build-dir}"/>
 		<javac source="1.8" target="1.8" srcdir="${src-dir}" destdir="${build-dir}">
 			<classpath>
-				<fileset file="${midas-jar}"></fileset>
-				<fileset file="${dejavu_game-dir}/antdist/dejavu_game.jar" />
+				<fileset file="${dejavu-game-dist}/dejavu_game.jar" />
 				<fileset file="${dejavu-jar}" />
 			</classpath>
 		</javac>
@@ -35,9 +35,9 @@
 		</copy>
 		<jar basedir="${build-dir}" jarfile="${dist-dir}/gametrailer.jar" />
 		<copy todir="${dist-dir}">
-			<fileset file="../dejavu/ant-dist/dejavu.jar" />
+			<fileset file="${dejavu-jar}" />
 			<fileset file="${silkicons-jar}" />
-			<fileset file="${dejavu_game-dir}/antdist/dejavu_game.jar" />
+			<fileset file="${dejavu-game-dist}/dejavu_game.jar" />
 		</copy>
 	</target>
 </project>
