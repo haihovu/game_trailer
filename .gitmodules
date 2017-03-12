@@ -1,0 +1,3 @@
+[submodule "dejavu_game"]
+	path = dejavu_game
+	url = https://github.com/haihovu/dejavu_game.git

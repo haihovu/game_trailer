@@ -3,10 +3,10 @@
 	<property name="src-dir" location="src"/>
 	<property name="build-dir" location="antbuild"/>
 	<property name="dist-dir" location="antdist"/>
-	<property name="dejavu-dist" location="../dejavu/ant-dist"/>
+	<property name="dejavu-dist" location="dejavu_game/dejavu/ant-dist"/>
 	<property name="dejavu-jar" location="${dejavu-dist}/dejavu.jar"/>
-	<property name="silkicons-jar" location="${dejavu-dir}/ant-dist/silk_icons.jar"/>
-	<property name="dejavu-game-dir" location="../dejavu_game" />
+	<property name="silkicons-jar" location="${dejavu-dist}/silk_icons.jar"/>
+	<property name="dejavu-game-dir" location="dejavu_game" />
 	<property name="dejavu-game-dist" location="${dejavu-game-dir}/antdist" />
 	<target name="all" depends="archive" />
 	<target name="clean" depends="clean-engine">
