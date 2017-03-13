@@ -28,6 +28,9 @@ public class Villain extends DvTarget {
 	private int flashIdx;
 	private int flashTimer;
 	private long damaged;
+	/**
+	 * Indicates that a villain had been killed and is now just a junk component on screen.
+	 */
 	boolean junk;
 	private float xMult = 1.0F;
 	private float yMult = 1.0F;
