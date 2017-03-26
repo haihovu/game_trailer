@@ -107,13 +107,13 @@ public class Bullet {
 		@Override
 		public void run() {
 			Collection<Bullet> spent = new LinkedList<>();
-			getBullets().stream().forEach((bullet) -> {
+			getBullets().stream().map((bullet) -> {
 				bullet.move();
-				getTargets().stream().forEach((target) -> {
-					if(bullet.bullet.getBounds().intersects(target.getBounds())) {
-						target.hit();
-						spent.add(bullet);
-					}
+				return bullet;
+			}).forEach((bullet) -> {
+				getTargets().stream().filter((target) -> bullet.bullet.getBounds().intersects(target.getBounds())).forEach((target) -> {
+					target.hit();
+					spent.add(bullet);
 				});
 			});
 			spent.stream().forEach((bullet) -> {

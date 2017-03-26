@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
@@ -409,8 +410,7 @@ public class GameTrailer extends javax.swing.JFrame {
 	 * Launches a new bunch of villains.
 	 */
 	private void launchVillains() {
-		int numVillains = (int)(Math.random() * 10) + 3;
-		for(int i = 0; i < numVillains; ++i) {
+		IntStream.range(0, (int)(Math.random() * 10) + 3).forEach(i -> {
 			Point center = new Point(state.getWidth() / 2, state.getHeigth() / 2);
 			Villain villain = new Villain("Man" + villainIdx++, new DvTarget.TargetListener() {
 				@Override
@@ -431,7 +431,7 @@ public class GameTrailer extends javax.swing.JFrame {
 			animation.addCharacter(villain.setPoint(center));
 			Bullet.addTarget(villain);
 			villainRunner.addVillain(villain);
-		}
+		});
 	}
 	
 	/**
